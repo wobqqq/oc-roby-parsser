@@ -1,0 +1,25 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Site
+
+# Model Form Field configuration
+form: $/blackseadigital/parser/models/site/fields.yaml
+
+# Model Class name
+modelClass: BlackSeaDigital\Parser\Models\Site
+
+# Default redirect location
+defaultRedirect: blackseadigital/parser/sites
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: blackseadigital/parser/sites
+    redirectClose: blackseadigital/parser/sites
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

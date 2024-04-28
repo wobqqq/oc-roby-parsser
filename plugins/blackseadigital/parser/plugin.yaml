@@ -1,0 +1,27 @@
+plugin:
+    name: Parser
+    icon: icon-podcast
+    homepage: ''
+navigation:
+    parser:
+        label: Parser
+        url: blackseadigital/parser/sites
+        permissions:
+            - parser
+        icon: icon-podcast
+        sideMenu:
+            sites:
+                label: Sites
+                url: blackseadigital/parser/sites
+                permissions:
+                    - parser
+                icon: icon-globe
+            pages:
+                label: Pages
+                url: blackseadigital/parser/pages
+                permissions:
+                    - parser
+                icon: icon-file-word-o
+permissions:
+    parser:
+        label: Parser

@@ -1,0 +1,12 @@
+tabs:
+    icons:
+        Settings: icon-cogs
+    fields:
+        url:
+            label: Url
+            span: left
+            required: true
+            type: text
+            placeholder: Url
+            tab: Settings
+            disabled: true

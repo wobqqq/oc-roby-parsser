@@ -9,6 +9,7 @@ use Backend\Classes\Controller;
 
 final class Pages extends Controller
 {
+    /** @var string[] */
     public $implement = [
         \Backend\Behaviors\FormController::class,
         \Backend\Behaviors\ListController::class,

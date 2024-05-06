@@ -2,6 +2,8 @@ FROM composer:2.7 AS composer
 
 FROM php:8.3.6-fpm-alpine3.19
 
+COPY ./conf.d/* /usr/local/etc/php/conf.d/
+
 RUN apk update \
     && apk add --no-cache \
         libpng-dev \

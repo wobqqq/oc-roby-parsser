@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BlackSeaDigital\Parser\Services\PageParsingService;
+
+final class BtmicPageParsingService extends CommonPageParsingService
+{
+    protected const array CLASSES_TO_EXCLUDE = [
+        '#map',
+        '#big_search',
+        '.articole-home',
+        '.back-btmic',
+        '.share',
+        '.breadcrumb',
+        '.header-blog--carousel',
+        '.articole #btnMore'
+    ];
+}

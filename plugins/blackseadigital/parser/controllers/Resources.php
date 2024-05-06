@@ -7,8 +7,9 @@ namespace BlackSeaDigital\Parser\Controllers;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-final class Sites extends Controller
+final class Resources extends Controller
 {
+    /** @var string[] */
     public $implement = [
         \Backend\Behaviors\FormController::class,
         \Backend\Behaviors\ListController::class,
@@ -22,6 +23,6 @@ final class Sites extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('BlackSeaDigital.Parser', 'parser', 'sites');
+        BackendMenu::setContext('BlackSeaDigital.Parser', 'parser', 'resources');
     }
 }

@@ -30,8 +30,7 @@ services:
     container_name: roby-parser-php-fpm
     image: roby-parser/php-fpm:${IMAGE_TAG:-latest}
     build:
-      dockerfile: docker/php-fpm/Dockerfile
-      context: .
+      context: ./docker/php-fpm
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}

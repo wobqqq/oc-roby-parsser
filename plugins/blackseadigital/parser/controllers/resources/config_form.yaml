@@ -3,22 +3,22 @@
 # ===================================
 
 # Record name
-name: Site
+name: Resource
 
 # Model Form Field configuration
-form: $/blackseadigital/parser/models/site/fields.yaml
+form: $/blackseadigital/parser/models/resource/fields.yaml
 
 # Model Class name
-modelClass: BlackSeaDigital\Parser\Models\Site
+modelClass: BlackSeaDigital\Parser\Models\Resource
 
 # Default redirect location
-defaultRedirect: blackseadigital/parser/sites
+defaultRedirect: blackseadigital/parser/resources
 
 # Update page
 update:
     title: backend::lang.form.update_title
-    redirect: blackseadigital/parser/sites
-    redirectClose: blackseadigital/parser/sites
+    redirect: blackseadigital/parser/resources
+    redirectClose: blackseadigital/parser/resources
 
 # Preview page
 preview:

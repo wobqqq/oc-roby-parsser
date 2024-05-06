@@ -4,8 +4,60 @@ columns:
         type: number
         searchable: true
         sortable: true
+        invisible: true
+    resource:
+        label: Resource
+        relation: resource
+        select: name
+        searchable: true
+        sortable: true
     url:
-        label: Url
+        label: URL
         type: text
         searchable: true
         sortable: true
+    is_active:
+        label: Active
+        type: switch
+        searchable: false
+        sortable: true
+    external_id:
+        label: External Id
+        type: text
+        searchable: true
+        sortable: true
+        invisible: true
+    title:
+        label: Title
+        type: text
+        searchable: true
+        sortable: false
+        invisible: true
+    content:
+        label: Content
+        type: text
+        searchable: false
+        sortable: false
+        invisible: true
+    parsed_at:
+        label: Parsed at
+        type: datetime
+        sortable: true
+        searchable: false
+    sent_at:
+        label: Sent At
+        type: datetime
+        sortable: true
+        searchable: false
+    created_at:
+        label: Created At
+        type: datetime
+        sortable: true
+        searchable: false
+        invisible: true
+    updated_at:
+        label: Updated At
+        type: datetime
+        sortable: true
+        searchable: false
+        invisible: true

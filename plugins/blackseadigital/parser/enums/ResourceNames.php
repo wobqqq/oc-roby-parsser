@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Blackseadigital\Parser\Enums;
+namespace BlackSeaDigital\Parser\Enums;
 
-enum SiteNames: string
+enum ResourceNames: string
 {
     case INTREB_BANCATRANSILVANIA_RO = 'intreb.bancatransilvania.ro';
     case BLOG_BANCATRANSILVANIA_RO = 'blog.bancatransilvania.ro';

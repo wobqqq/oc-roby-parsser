@@ -1,0 +1,49 @@
+fields:
+    name:
+        label: Name
+        span: left
+        required: true
+        type: text
+        placeholder: Name
+        disabled: true
+tabs:
+    icons:
+        Settings: icon-cogs
+        Scan exceptions: icon-podcast
+    fields:
+        is_active:
+            label: Active
+            span: left
+            default: 0
+            type: switch
+            tab: Settings
+            comment: 'Completely enables/disables work with this resource.'
+        url:
+            label: Root URL
+            span: left
+            required: true
+            type: text
+            placeholder: Url
+            tab: Settings
+        config[sitemap_url]:
+            label: Sitemap URL
+            span: left
+            required: false
+            type: text
+            placeholder: Sitemap URL
+            tab: Settings
+        config[scan_exceptions]:
+            label: Scan exceptions
+            type: repeater
+            span: left
+            prompt: Add URL
+            tab: Scan exceptions
+            commentHtml: true
+            commentAbove: 'Exclude URLs from crawling that <strong>do not contain URLs to other pages</strong>. <br>Format for url: <strong>https://my-resource.com/some-text/some-text</strong> (without GET parameters).'
+            form:
+                fields:
+                    url:
+                        label: URL
+                        type: text
+                        span: full
+                        placeholder: URL

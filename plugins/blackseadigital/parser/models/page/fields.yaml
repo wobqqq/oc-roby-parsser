@@ -1,12 +1,78 @@
+fields:
+    resource:
+        label: Resource
+        type: relation
+        span: left
+        required: true
+        disabled: true
+        select: name
+    url:
+        label: URL
+        span: right
+        required: true
+        type: text
+        placeholder: Url
+        disabled: true
 tabs:
     icons:
         Settings: icon-cogs
+        Content: icon-file-o
     fields:
-        url:
-            label: Url
+        is_active:
+            label: Active
             span: left
-            required: true
-            type: text
-            placeholder: Url
+            default: 0
+            type: switch
             tab: Settings
+            comment: 'Enable/disable sending data by page to the API.'
+        external_id:
+            label: External id
+            span: left
+            type: text
+            placeholder: External id
+            tab: Settings
+            disabled: true
+        parsed_at:
+            label: Parsed at
+            span: left
+            type: datepicker
+            mode: datetime
+            tab: Settings
+            disabled: true
+        sent_at:
+            label: Sent At
+            span: left
+            type: datepicker
+            mode: datetime
+            tab: Settings
+            disabled: true
+        created_at:
+            label: Created At
+            span: left
+            type: datepicker
+            mode: datetime
+            tab: Settings
+            disabled: true
+            required: true
+        updated_at:
+            label: Created At
+            span: left
+            type: datepicker
+            mode: datetime
+            tab: Settings
+            disabled: true
+        title:
+            label: Title
+            span: left
+            type: text
+            placeholder: Title
+            tab: Content
+            disabled: true
+        content:
+            label: Content
+            span: left
+            type: textarea
+            placeholder: Content
+            size: giant
+            tab: Content
             disabled: true

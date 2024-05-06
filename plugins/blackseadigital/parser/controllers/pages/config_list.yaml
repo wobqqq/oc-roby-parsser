@@ -45,3 +45,5 @@ toolbar:
     # Search widget configuration
     search:
         prompt: backend::lang.list.search_prompt
+
+filter: _config_filter.yaml

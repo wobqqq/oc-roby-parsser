@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/blackseadigital/parser/models/site/columns.yaml
+list: $/blackseadigital/parser/models/resource/columns.yaml
 
 # Model Class name
-modelClass: BlackSeaDigital\Parser\Models\Site
+modelClass: BlackSeaDigital\Parser\Models\Resource
 
 # List Title
-title: Manage Sites
+title: Manage Resources
 
 # Link URL for each record
-recordUrl: blackseadigital/parser/sites/update/:id
+recordUrl: blackseadigital/parser/resources/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
@@ -45,3 +45,5 @@ toolbar:
     # Search widget configuration
     search:
         prompt: backend::lang.list.search_prompt
+
+filter: _config_filter.yaml

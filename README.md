@@ -65,8 +65,6 @@ This will run composer install, DB migrations, IDE helper, etc.
 
 Application URL - [http://localhost](http://localhost)
 
-Email trap URL - [http://localhost:8025](http://localhost:8025)
-
 ## Running and Stopping the Project
 
 After the [quick start installation](#Quick-Start-Installation), you can start and stop the project with the following commands.

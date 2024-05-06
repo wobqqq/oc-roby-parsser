@@ -4,13 +4,19 @@ columns:
         type: number
         searchable: true
         sortable: true
+        invisible: true
     name:
         label: Name
         type: text
         searchable: true
         sortable: true
+    is_active:
+        label: Active
+        type: switch
+        searchable: false
+        sortable: true
     url:
-        label: Url
+        label: Root URL
         type: text
         searchable: true
         sortable: true

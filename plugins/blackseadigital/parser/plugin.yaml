@@ -5,14 +5,14 @@ plugin:
 navigation:
     parser:
         label: Parser
-        url: blackseadigital/parser/sites
+        url: blackseadigital/parser/resources
         permissions:
             - parser
         icon: icon-podcast
         sideMenu:
-            sites:
-                label: Sites
-                url: blackseadigital/parser/sites
+            resources:
+                label: Resources
+                url: blackseadigital/parser/resources
                 permissions:
                     - parser
                 icon: icon-globe

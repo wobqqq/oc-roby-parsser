@@ -1,0 +1,33 @@
+scopes:
+    is_active:
+        label: Active
+        type: switch
+        conditions:
+            - is_active <> true
+            - is_active = true
+    resource:
+        label: Resource
+        modelClass: BlackSeaDigital\Parser\Models\Resource
+        conditions: resource_id in (:filtered)
+        nameFrom: name
+    parsed_at:
+        label: Parsed at
+        type: daterange
+        conditions:
+            between: parsed_at >= ':after' AND parsed_at <= ':before'
+    sent_at:
+        label: Sent At
+        type: daterange
+        conditions:
+            between: sent_at >= ':after' AND sent_at <= ':before'
+    created_at:
+        label: Created At
+        type: daterange
+        conditions:
+            between: created_at >= ':after' AND created_at <= ':before'
+    updated_at:
+        label: Updated At
+        type: daterange
+        mode: datetime
+        conditions:
+            between: updated_at >= ':after' AND updated_at <= ':before'

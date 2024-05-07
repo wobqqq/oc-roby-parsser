@@ -11,14 +11,14 @@ use Illuminate\Console\Command;
 use Log;
 use October\Rain\Argon\Argon;
 
-final class StartServeCommand extends Command
+final class ParseResourcesCommand extends Command
 {
     private const string STARTING_MESSAGE = 'Start of parsing (%s)';
 
     private const string ENDING_MESSAGE = 'End of parsing (%s)';
 
     /** @var string */
-    protected $name = 'black-sea-digital.start_serve';
+    protected $name = 'black-sea-digital.parse_resources';
 
     /** @var string */
     protected $description = 'Resource parsing';

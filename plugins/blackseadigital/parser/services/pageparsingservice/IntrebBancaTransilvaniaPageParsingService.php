@@ -21,5 +21,6 @@ final class IntrebBancaTransilvaniaPageParsingService extends CommonPageParsingS
         '.bt-sticky-search',
         '.questions-listing',
         '.pagination',
+        '.bt-box-loginBt24',
     ];
 }

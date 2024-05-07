@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Partners\Updates;
 
-use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
-return new class extends Migration {
+return new class () extends Migration {
     public function up(): void
     {
         Schema::create('blackseadigital_parser_pages', function (Blueprint $table) {

@@ -14,6 +14,6 @@ final class BtmicPageParsingService extends CommonPageParsingService
         '.share',
         '.breadcrumb',
         '.header-blog--carousel',
-        '.articole #btnMore'
+        '.articole #btnMore',
     ];
 }

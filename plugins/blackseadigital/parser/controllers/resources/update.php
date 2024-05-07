@@ -24,9 +24,9 @@ if (!$this->fatalError): ?>
                 data-request="onSave"
                 data-request-data="{ redirect: 0 }"
                 data-hotkey="ctrl+s, cmd+s"
-                data-request-message="<?= __("Saving :name...", ['name' => $formRecordName]) ?>"
+                data-request-message="<?= __('Saving :name...', ['name' => $formRecordName]) ?>"
                 class="btn btn-primary">
-                <?= __("Save") ?>
+                <?= __('Save') ?>
             </button>
             <button
                 type="button"
@@ -34,16 +34,16 @@ if (!$this->fatalError): ?>
                 data-request-data="{ close: 1 }"
                 data-browser-redirect-back
                 data-hotkey="ctrl+enter, cmd+enter"
-                data-request-message="<?= __("Saving :name...", ['name' => $formRecordName]) ?>"
+                data-request-message="<?= __('Saving :name...', ['name' => $formRecordName]) ?>"
                 class="btn btn-default">
-                <?= __("Save & Close") ?>
+                <?= __('Save & Close') ?>
             </button>
             <span class="btn-text">
-                    <span class="button-separator"><?= __("or") ?></span>
+                    <span class="button-separator"><?= __('or') ?></span>
                     <a
                         href="<?= Backend::url('blackseadigital/parser/resources') ?>"
                         class="btn btn-link p-0">
-                        <?= __("Cancel") ?>
+                        <?= __('Cancel') ?>
                     </a>
                 </span>
         </div>
@@ -51,8 +51,7 @@ if (!$this->fatalError): ?>
 
     <?= Form::close() ?>
 
-<?php
-else: ?>
+<?php else: ?>
 
     <p class="flash-message static error">
         <?= e($this->fatalError) ?>
@@ -61,9 +60,8 @@ else: ?>
         <a
             href="<?= Backend::url('blackseadigital/parser/resources') ?>"
             class="btn btn-default">
-            <?= __("Return to List") ?>
+            <?= __('Return to List') ?>
         </a>
     </p>
 
-<?php
-endif ?>
+<?php endif ?>

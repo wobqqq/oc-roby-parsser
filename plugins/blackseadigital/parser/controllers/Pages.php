@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Controllers;
 
-use BackendMenu;
 use Backend\Classes\Controller;
+use BackendMenu;
 
 final class Pages extends Controller
 {

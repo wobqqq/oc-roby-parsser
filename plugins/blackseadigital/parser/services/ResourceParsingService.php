@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace BlackSeaDigital\Parser\Services;
 
 use Arr;
-use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Enums\ResourceNames;
+use BlackSeaDigital\Parser\Exceptions\ParserException;
+use BlackSeaDigital\Parser\Models\Resource;
 use BlackSeaDigital\Parser\Queries\PageQuery;
 use BlackSeaDigital\Parser\Services\PageParsingService\PageParsingService;
 use Config;
-use GuzzleHttp\Client as GuzzleClient;
+use Exception;
 use Goutte\Client as GoutteClient;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\Utils;
-use BlackSeaDigital\Parser\Models\Resource;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Log;
 use Symfony\Component\DomCrawler\Crawler;
@@ -23,9 +29,9 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 final class ResourceParsingService
 {
-    readonly private GuzzleClient $guzzleClient;
+    private readonly GuzzleClient $guzzleClient;
 
-    readonly private GoutteClient $goutteClient;
+    private readonly GoutteClient $goutteClient;
 
     /** string[] */
     private array $processedUrls = [];
@@ -53,10 +59,29 @@ final class ResourceParsingService
         private readonly PageQuery $pageQuery,
         private readonly Resource $resource
     ) {
+        $requestRetries = (int)Config::get('parser.request_retries');
+        $stack = HandlerStack::create();
+        $stack->push(
+            Middleware::retry(
+                function (int $retries, Request $request, Response $response = null, Exception $e = null) use (
+                    $requestRetries
+                ) {
+                    if (
+                        $retries < $requestRetries
+                        && ($e instanceof ServerException || $e instanceof ConnectException)
+                    ) {
+                        return true;
+                    }
+
+                    return false;
+                }
+            )
+        );
         $this->guzzleClient = new GuzzleClient([
             'verify' => false,
             'http_errors' => false,
             'timeout' => (int)Config::get('parser.parser_timeout'),
+            'handler' => $stack,
         ]);
         $httpClient = HttpClient::create(['verify_peer' => false]);
         $this->goutteClient = new GoutteClient($httpClient);
@@ -70,6 +95,7 @@ final class ResourceParsingService
     public function serveResource(): void
     {
         $baseUrls = $this->getBaseUrls();
+
         $this->addUrlToQueue($baseUrls);
 
         $requestUrls = $this->getUrlsFromQueue();
@@ -84,7 +110,7 @@ final class ResourceParsingService
                     $pageUrl = Arr::get($requestUrls, $urlKey, '');
                     $this->servePage($urlKey, $pageUrl, $rootPageUrl, $response, $requestUrls);
                 }
-            } catch (\Exception|\Throwable $e) {
+            } catch (Exception|\Throwable $e) {
                 $this->printLogError($e, ['request_urls' => $requestUrls]);
             }
 
@@ -124,7 +150,7 @@ final class ResourceParsingService
 
         try {
             $this->pageParsingService->service($this->resource)->serve($urlKey, clone $crawler, $this->resource);
-        } catch (\Exception|\Throwable $e) {
+        } catch (Exception|\Throwable $e) {
             $this->printLogError($e, ['url_key' => $urlKey]);
         }
 
@@ -180,16 +206,17 @@ final class ResourceParsingService
             case ResourceNames::BANCATRANSILVANIA_RO->value:
             case ResourceNames::BLOG_BANCATRANSILVANIA_RO->value:
                 if ($crawler->filter('#nextPageBtn')->count() > 0) {
-                    $this->serveOctoberCmsAjaxPagination($pageUrl);
+                    $this->serveOctoberCmsAjaxPagination($pageUrl, 1, 'Posts::onLoadMore');
                 }
+                break;
             default:
         }
     }
 
-    private function serveOctoberCmsAjaxPagination(string $url, int $page = 1): void
+    private function serveOctoberCmsAjaxPagination(string $url, int $page, string $handler): void
     {
         try {
-            $responses = $this->sendOctoberCmsAjaxPaginationRequests($url, $page);
+            $responses = $this->sendOctoberCmsAjaxPaginationRequests($url, $page, $handler);
 
             if (empty($responses)) {
                 return;
@@ -204,7 +231,7 @@ final class ResourceParsingService
                     $content = $response->getBody()->getContents();
                     $partials = empty($content) ? [] : json_decode($content, true);
                     $partials = array_filter($partials);
-                } catch (\Exception|\Throwable $e) {
+                } catch (Exception|\Throwable $e) {
                     $partials = [];
                 }
 
@@ -222,9 +249,9 @@ final class ResourceParsingService
             }
 
             if ($isNextPageRequest) {
-                $this->serveOctoberCmsAjaxPagination($url, $page);
+                $this->serveOctoberCmsAjaxPagination($url, $page, $handler);
             }
-        } catch (\Exception|\Throwable $e) {
+        } catch (Exception|\Throwable $e) {
             $this->printLogError($e, ['request_url' => $url]);
         }
     }
@@ -233,7 +260,7 @@ final class ResourceParsingService
      * @return Response[]
      * @throws \Throwable
      */
-    private function sendOctoberCmsAjaxPaginationRequests(string $url, int $page): array
+    private function sendOctoberCmsAjaxPaginationRequests(string $url, int $page, string $handler): array
     {
         /** @var Promise[] $promises */
         $promises = [];
@@ -246,15 +273,14 @@ final class ResourceParsingService
             $promises[$page] = $this->guzzleClient->postAsync($url, [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'X-October-Request-Handler' => 'Posts::onLoadMore',
-                    'X-Requested-With' => 'XMLHttpRequest'
+                    'X-October-Request-Handler' => $handler,
+                    'X-Requested-With' => 'XMLHttpRequest',
                 ],
-                'body' => json_encode(['nextPage' => $page])
+                'body' => json_encode(['nextPage' => $page]),
             ]);
         }
 
         $responses = Utils::settle($promises)->wait();
-
         /** @var Response[] $responses */
         $responses = array_map(function (array $response) {
             $state = Arr::get($response, 'state');
@@ -358,7 +384,7 @@ final class ResourceParsingService
             $sitemapUrls = $crawler->filterXPath('//*[local-name()="loc"]')->each(function (Crawler $node) {
                 return $node->text();
             });
-        } catch (\Exception|\Throwable $e) {
+        } catch (Exception|\Throwable $e) {
             $sitemapUrls = [];
         }
 
@@ -415,7 +441,7 @@ final class ResourceParsingService
         echo "---------------------------------\n";
     }
 
-    private function printLogError(\Exception|\Throwable $e, array $data = []): void
+    private function printLogError(Exception|\Throwable $e, array $data = []): void
     {
         $defaultData = [
             'title' => sprintf('%s resource error', $this->resource->name),

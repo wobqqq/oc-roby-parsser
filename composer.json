@@ -15,21 +15,27 @@
     "require-dev": {
         "phpunit/phpunit": "^8.5|^9.0",
         "wobqqq/oc-ide-helper": "^1.0.0",
-        "enlightn/security-checker": "^1.10"
+        "enlightn/security-checker": "^1.10",
+        "friendsofphp/php-cs-fixer": "^3.55",
+        "j13k/yaml-lint": "^1.1"
     },
     "scripts": {
         "code.ide-helper.generate": "@php artisan ide-helper:generate",
         "code.ide-helper.models": "@php artisan ide-helper:models --write --reset --quiet",
         "code.ide-helper.meta": "@php artisan ide-helper:meta",
+        "code.cs-fixer": "php-cs-fixer --diff fix",
+        "code.yaml-linter": "yaml-lint ./plugins/blackseadigital/",
         "code.fix": [
             "@code.ide-helper.generate",
             "@code.ide-helper.models",
-            "@code.ide-helper.meta"
+            "@code.ide-helper.meta",
+            "@code.cs-fixer"
         ],
         "code.analyse": [
             "composer validate",
             "composer diagnose",
-            "security-checker security:check ./composer.lock"
+            "security-checker security:check ./composer.lock",
+            "@code.yaml-linter"
         ],
         "code.debug": [
             "@code.fix",

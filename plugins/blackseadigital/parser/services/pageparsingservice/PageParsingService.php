@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
-use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Enums\ResourceNames;
+use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Resource;
 
 final class PageParsingService

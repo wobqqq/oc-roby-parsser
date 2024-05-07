@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace BlackSeaDigital\Partners\Updates;
 
 use BlackSeaDigital\Parser\Enums\ResourceNames;
-use Schema;
+use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
-use Illuminate\Support\Facades\DB;
+use Schema;
 
-return new class extends Migration {
+return new class () extends Migration {
     public function up(): void
     {
         Schema::create('blackseadigital_parser_resources', function (Blueprint $table) {

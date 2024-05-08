@@ -15,7 +15,7 @@ use October\Rain\Database\Traits\Validation;
  * @property bool $is_active
  * @property int $resource_id
  * @property string $external_id
- * @property string|null $title
+ * @property string $title
  * @property string $content
  * @property \October\Rain\Argon\Argon|null $parsed_at
  * @property \October\Rain\Argon\Argon|null $sent_at

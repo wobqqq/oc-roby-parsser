@@ -58,27 +58,6 @@ cp .env.example .env
 
 **Step 4.** Set your **UID** and **GID** in the `.env` file (By default these values are set to **1000**).
 
-
-You can find out your **UID** and **GID** on **Linux** and **macOS** using the following commands:
-
- ```bash
-id -u
-```
-
-```bash
-id -g
-```
-
-You can find out your **UID** and **GID** on **Windows** using the following commands:
-
-```bash
-whoami /user
-```
-
-```bash
-whoami /groups
-```
-
 **Step 5.** Run the containers:
 
 ```bash

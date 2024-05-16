@@ -49,7 +49,6 @@
         ],
         "project.install": [
             "composer install",
-            "if [ ! -f auth.json ]; then php artisan project:set; fi",
             "@php artisan october:migrate",
             "@project.generate.app_key",
             "@project.clear",

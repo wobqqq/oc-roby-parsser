@@ -24,6 +24,7 @@ final class PageService
             'sent_at' => $pageModelDto->sentAt,
             'title' => $pageModelDto->title,
             'content' => $pageModelDto->content,
+            'content_id' => $pageModelDto->contentId,
         ]);
     }
 
@@ -41,6 +42,7 @@ final class PageService
             'sent_at' => $pageModelDto->sentAt,
             'title' => $pageModelDto->title,
             'content' => $pageModelDto->content,
+            'content_id' => $pageModelDto->contentId,
         ]);
 
         return $page;

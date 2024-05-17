@@ -39,6 +39,12 @@ columns:
         type: text
         searchable: true
         sortable: true
+    content_id:
+        label: Content Id
+        type: text
+        searchable: true
+        sortable: true
+        invisible: true
     title:
         label: Title
         type: text

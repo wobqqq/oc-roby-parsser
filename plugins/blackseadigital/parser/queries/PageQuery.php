@@ -28,6 +28,11 @@ final readonly class PageQuery
         return Page::whereIn('external_id', $externalIds)->get();
     }
 
+    public function findPageByContentId(string $contentId): ?Page
+    {
+        return Page::whereContentId($contentId)->first();
+    }
+
     public function countPagesToSendToChatGpt(int $resourceId): int
     {
         return $this->queryToSendPagesToChatGpt($resourceId)->count();
@@ -46,7 +51,7 @@ final readonly class PageQuery
                 ->where(
                     fn (Builder|Page $q) => $q
                     ->whereIsActive(true)
-                    ->orWhereIn('status_id', [PageStatus::CREATE, PageStatus::UPDATE->value, PageStatus::DELETE->value])
+                    ->whereIn('status_id', [PageStatus::CREATE, PageStatus::UPDATE->value, PageStatus::DELETE->value])
                 )
                 ->orWhere(
                     fn (Builder|Page $q) => $q

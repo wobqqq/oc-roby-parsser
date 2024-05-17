@@ -17,6 +17,7 @@ use October\Rain\Database\Traits\Validation;
  * @property int $resource_id
  * @property string $external_id
  * @property string|null $document_id
+ * @property string $content_id
  * @property PageStatus $status_id
  * @property string $title
  * @property string $content
@@ -44,6 +45,7 @@ use October\Rain\Database\Traits\Validation;
  * @method static \October\Rain\Database\Builder|Page simplePaginateCustom($perPage, $pageName)
  * @method static \October\Rain\Database\Builder|Page whereChangedAt($value)
  * @method static \October\Rain\Database\Builder|Page whereContent($value)
+ * @method static \October\Rain\Database\Builder|Page whereContentId($value)
  * @method static \October\Rain\Database\Builder|Page whereCreatedAt($value)
  * @method static \October\Rain\Database\Builder|Page whereDocumentId($value)
  * @method static \October\Rain\Database\Builder|Page whereExternalId($value)
@@ -71,6 +73,7 @@ class Page extends Model
         'resource_id' => 'Resource',
         'external_id' => 'External Id',
         'document_id' => 'Document Id',
+        'content_id' => 'Content Id',
         'status_id' => 'Status',
         'title' => 'Title',
         'content' => 'Content',
@@ -87,6 +90,7 @@ class Page extends Model
         'resource_id' => 'required|integer',
         'external_id' => 'required|string|max:255',
         'document_id' => 'nullable|string|max:255',
+        'content_id' => 'required|string|max:255',
         'status_id' => 'required|string|max:50',
         'title' => 'nullable|string|max:500',
         'content' => 'required|string',
@@ -102,6 +106,7 @@ class Page extends Model
         'resource_id',
         'external_id',
         'document_id',
+        'content_id',
         'status_id',
         'title',
         'content',

@@ -17,6 +17,7 @@ final readonly class ParserPageDto
         public Argon $parsedAt,
         public string $title,
         public string $content,
+        public string $contentId,
         public Argon $changedAt,
     ) {
     }

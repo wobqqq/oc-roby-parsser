@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlackSeaDigital\Parser;
+namespace BlackSeaDigital\Parser\Services;
 
 use Arr;
 use BlackSeaDigital\Parser\Enums\PageStatus;
@@ -11,12 +11,11 @@ use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Resource;
 use BlackSeaDigital\Parser\Queries\PageQuery;
 use BlackSeaDigital\Parser\Services\PageParsingService\PageParsingService;
-use BlackSeaDigital\Parser\Services\PageService;
-use BlackSeaDigital\Parser\Services\UrlService;
 use Config;
 use Exception;
 use Goutte\Client as GoutteClient;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\HandlerStack;
@@ -32,6 +31,10 @@ use Symfony\Component\HttpFoundation\Response as HttpStatus;
 
 final class ResourceParsingService
 {
+    private const array DOUBLE_REQUESTS = [
+        ResourceNames::INTREB_BANCATRANSILVANIA_RO->value,
+    ];
+
     private readonly GuzzleClient $guzzleClient;
 
     private readonly GoutteClient $goutteClient;
@@ -65,6 +68,7 @@ final class ResourceParsingService
     ) {
         $requestRetries = (int)Config::get('parser.request_retries');
         $stack = HandlerStack::create();
+        $cookieJar = new CookieJar();
         $stack->push(
             Middleware::retry(
                 function (int $retries, Request $request, Response $response = null, Exception $e = null) use (
@@ -86,6 +90,7 @@ final class ResourceParsingService
             'http_errors' => false,
             'timeout' => (int)Config::get('parser.parser_timeout'),
             'handler' => $stack,
+            'cookies' => $cookieJar,
         ]);
         $httpClient = HttpClient::create(['verify_peer' => false]);
         $this->goutteClient = new GoutteClient($httpClient);
@@ -109,6 +114,10 @@ final class ResourceParsingService
         while (!empty($requestUrls)) {
             try {
                 $responses = $this->sendRequests($requestUrls);
+
+                if (in_array($this->resource->name, self::DOUBLE_REQUESTS)) {
+                    $responses = $this->sendRequests($requestUrls);
+                }
 
                 foreach ($responses as $urlKey => $response) {
                     $pageUrl = Arr::get($requestUrls, $urlKey, '');
@@ -223,6 +232,10 @@ final class ResourceParsingService
     {
         try {
             $responses = $this->sendOctoberCmsAjaxPaginationRequests($url, $page, $handler);
+
+            if (in_array($this->resource->name, self::DOUBLE_REQUESTS)) {
+                $responses = $this->sendOctoberCmsAjaxPaginationRequests($url, $page, $handler);
+            }
 
             if (empty($responses)) {
                 return;

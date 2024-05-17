@@ -9,6 +9,7 @@ use BlackSeaDigital\Parser\Enums\PageStatus;
 use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Page;
 use BlackSeaDigital\Parser\Models\Resource;
+use BlackSeaDigital\Parser\Queries\PageQuery;
 use BlackSeaDigital\Parser\Services\PageService;
 use BlackSeaDigital\Parser\Services\UrlService;
 use BlackSeaDigital\Parser\Transformers\ParserTransformer;
@@ -42,6 +43,7 @@ class BasePageParsingService implements IPageParsingService
     public function __construct(
         private readonly UrlService $urlService,
         private readonly PageService $pageService,
+        private readonly PageQuery $pageQuery,
     ) {
     }
 
@@ -57,9 +59,9 @@ class BasePageParsingService implements IPageParsingService
         [$title, $content] = $this->getContent($crawler);
 
         try {
-            $this->checkContent($content);
             $this->checkUrl($urlKey);
             $this->checkUrlParameters($urlKey);
+            $this->checkContent($content);
             $this->checkForm($crawler);
             $this->check($urlKey);
         } catch (Exception|Throwable $e) {
@@ -191,6 +193,12 @@ class BasePageParsingService implements IPageParsingService
         );
 
         $pageModelDto = ParserTransformer::pageFromParserPageDto($parserPageDto, $page);
+
+        $duplicatePage = $this->pageQuery->findPageByContentId($parserPageDto->contentId);
+
+        if (!empty($duplicatePage)) {
+            return;
+        }
 
         if (empty($page)) {
             $this->pageService->create($pageModelDto);

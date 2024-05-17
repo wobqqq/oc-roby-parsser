@@ -18,6 +18,7 @@ return new class () extends Migration {
             $table->smallInteger('resource_id')->unsigned()->index();
             $table->string('external_id')->index();
             $table->string('document_id')->index()->nullable();
+            $table->string('content_id')->unique();
             $table->string('status_id', 50)->index();
             $table->string('title', 500);
             $table->text('content');

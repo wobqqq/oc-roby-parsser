@@ -6,7 +6,7 @@ namespace BlackSeaDigital\Parser\Console;
 
 use BlackSeaDigital\Parser\Models\Resource;
 use BlackSeaDigital\Parser\Queries\ResourceQuery;
-use BlackSeaDigital\Parser\ResourceParsingService;
+use BlackSeaDigital\Parser\Services\ResourceParsingService;
 use Illuminate\Console\Command;
 use Log;
 use October\Rain\Argon\Argon;

@@ -19,6 +19,7 @@ final readonly class PageModelDto
         public string $content,
         public Argon $parsedAt,
         public Argon $changedAt,
+        public string $contentId,
         public ?string $documentId = null,
         public ?Argon $sentAt = null,
     ) {

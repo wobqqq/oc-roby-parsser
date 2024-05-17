@@ -25,6 +25,7 @@ final class ParserTransformer
             $parserPageDto->content,
             $parserPageDto->parsedAt,
             $parserPageDto->changedAt,
+            $parserPageDto->contentId,
             !empty($page) ? $page->document_id : null,
             !empty($page) ? $page->sent_at : null
         );
@@ -47,6 +48,7 @@ final class ParserTransformer
             Argon::now(),
             $title,
             $content,
+            md5($content),
             $changedAt,
         );
     }

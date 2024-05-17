@@ -45,10 +45,10 @@ final readonly class ChatGptSenderService
                             'trace' => $e->getTraceAsString(),
                         ], true));
                     }
-                }
 
-                $countPages += $pages->count();
-                $this->printResourceChunkResultToConsole($resource, $totalPages, $countPages);
+                    $countPages++;
+                    $this->printResourceChunkResultToConsole($resource, $totalPages, $countPages);
+                }
             }
         );
 

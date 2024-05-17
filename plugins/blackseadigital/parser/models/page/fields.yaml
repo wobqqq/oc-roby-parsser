@@ -48,6 +48,13 @@ tabs:
             placeholder: Document id
             tab: Settings
             disabled: true
+        content_id:
+            label: Content id
+            span: left
+            type: text
+            placeholder: Content id
+            tab: Settings
+            disabled: true
         parsed_at:
             label: Parsed at
             span: left

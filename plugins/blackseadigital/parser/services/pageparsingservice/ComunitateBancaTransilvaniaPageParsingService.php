@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
-final class ComunitateBancaTransilvaniaPageParsingService extends CommonPageParsingService
+final class ComunitateBancaTransilvaniaPageParsingService extends BasePageParsingService
 {
     protected const array CLASSES_TO_EXCLUDE = [
         '.bt-form-sticky-button',

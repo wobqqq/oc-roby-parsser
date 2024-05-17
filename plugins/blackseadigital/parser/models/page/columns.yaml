@@ -27,6 +27,18 @@ columns:
         searchable: true
         sortable: true
         invisible: true
+    status_id:
+        label: Status
+        type: selectable
+        searchable: false
+        sortable: true
+        invisible: true
+        options: getStatusIdsOptions
+    document_id:
+        label: Document Id
+        type: text
+        searchable: true
+        sortable: true
     title:
         label: Title
         type: text
@@ -44,6 +56,12 @@ columns:
         type: datetime
         sortable: true
         searchable: false
+    changed_at:
+        label: Changed at
+        type: datetime
+        sortable: true
+        searchable: false
+        invisible: true
     sent_at:
         label: Sent At
         type: datetime

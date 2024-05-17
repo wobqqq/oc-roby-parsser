@@ -1,6 +1,6 @@
 # Roby parser
 
-Web resource parser.
+Parsing web pages and sending content to ChatGPT.
 
 ## Services and Tools
 
@@ -8,24 +8,17 @@ Web resource parser.
 - PHP 8.3
 - Composer 2.7
 - MySQL 8.0
-- OctoberCMS
+- OctoberCMS 3.6
 
 ## Usage
 
-### Commands
-
-Start resource parsing:
-
-```bash
-docker exec -t roby-parser-php-fpm php artisan black-sea-digital.parse_resources
-```
-
-### Managing resources and pages
-
-[http://localhost/admin/blackseadigital/parser/resources](http://localhost/admin/blackseadigital/parser/resources)
-
 ### .env configuration
 
+ChatGPT URL:
+
+```angular2html
+CHAT_GPT_URL=http://37.251.255.17:8001
+```
 Number of parallel processes for web resource parsing:
 
 ```angular2html
@@ -43,6 +36,20 @@ Minimum number of characters that page content can contain:
 ```angular2html
 PARSER_MIN_PAGE_CONTENT_SIZE=100
 ```
+
+### Commands
+
+Start the resource parser and sender to ChatGPT:
+
+```bash
+docker exec -t roby-parser-php-fpm php artisan black-sea-digital.serve_resources
+```
+
+The process is divided into two parts. First, web pages are scanned for each resource and data is recorded in the database. The next step is that the received data is sent to ChatGPT.
+
+### Managing resources and pages
+
+[http://localhost/admin/blackseadigital/parser/resources](http://localhost/admin/blackseadigital/parser/resources)
 
 ## Quick Start Installation
 
@@ -118,4 +125,15 @@ Code fix and analysis:
 
 ```bash
 docker exec -t roby-parser-php-fpm composer code.debug
+```
+Start the resource parser:
+
+```bash
+docker exec -t roby-parser-php-fpm php artisan black-sea-digital.parse_resources
+```
+
+Start the resource sender web pages content to ChatGPT:
+
+```bash
+docker exec -t roby-parser-php-fpm php artisan black-sea-digital.send_content_to_chat_gpt
 ```

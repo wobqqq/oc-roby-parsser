@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
 use Arr;
+use BlackSeaDigital\Parser\Enums\PageStatus;
 use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Page;
 use BlackSeaDigital\Parser\Models\Resource;
@@ -12,9 +13,13 @@ use BlackSeaDigital\Parser\Services\PageService;
 use BlackSeaDigital\Parser\Services\UrlService;
 use BlackSeaDigital\Parser\Transformers\ParserTransformer;
 use Config;
+use Exception;
+use Log;
+use October\Rain\Argon\Argon;
 use Symfony\Component\DomCrawler\Crawler;
+use Throwable;
 
-class CommonPageParsingService implements IPageParsingService
+class BasePageParsingService implements IPageParsingService
 {
     private const array TAGS_TO_EXCLUDE = [
         'head',
@@ -42,19 +47,28 @@ class CommonPageParsingService implements IPageParsingService
 
     public function serve(string $urlKey, Crawler $crawler, Resource $resource): void
     {
-        [$title, $content] = $this->getContent($crawler);
+        $externalId = $this->urlService->getExternalId($resource->id, $urlKey);
+        $page = Page::whereExternalId($externalId)->first();
 
-        try {
-            $this->checkUrl($urlKey);
-            $this->checkUrlParameters($urlKey);
-            $this->checkContent($content);
-            $this->checkForm($crawler);
-            $this->check($urlKey);
-        } catch (\Exception|\Throwable $e) {
+        if (!empty($page) && $page->is_active === false) {
             return;
         }
 
-        $this->update($urlKey, $resource, $title, $content);
+        [$title, $content] = $this->getContent($crawler);
+
+        try {
+            $this->checkContent($content);
+            $this->checkUrl($urlKey);
+            $this->checkUrlParameters($urlKey);
+            $this->checkForm($crawler);
+            $this->check($urlKey);
+        } catch (Exception|Throwable $e) {
+            $this->delete($page);
+
+            return;
+        }
+
+        $this->update($urlKey, $externalId, $resource, $title, $content, $page);
     }
 
     protected function check(string $urlKey): void
@@ -155,19 +169,26 @@ class CommonPageParsingService implements IPageParsingService
         }
     }
 
-    private function update(string $url, Resource $resource, string $title, string $content): void
-    {
-        $externalId = $this->urlService->getExternalId($resource->id, $url);
+    private function update(
+        string $url,
+        string $externalId,
+        Resource $resource,
+        string $title,
+        string $content,
+        ?Page $page = null,
+    ): void {
+        $changedAt = $this->getChangedAt($content, $page);
+        $statusId = $this->getStatusId($content, $page);
 
         $parserPageDto = ParserTransformer::parserPageFromParser(
             $url,
             $externalId,
+            $statusId,
             $resource,
             $title,
-            $content
+            $content,
+            $changedAt,
         );
-
-        $page = Page::whereExternalId($externalId)->first();
 
         $pageModelDto = ParserTransformer::pageFromParserPageDto($parserPageDto, $page);
 
@@ -176,5 +197,45 @@ class CommonPageParsingService implements IPageParsingService
         } else {
             $this->pageService->update($pageModelDto, $page);
         }
+    }
+
+    private function delete(?Page $page): void
+    {
+        if (empty($page)) {
+            return;
+        }
+
+        try {
+            $this->pageService->updatePageStatus($page, PageStatus::DELETE);
+        } catch (Exception $e) {
+            Log::error(print_r([
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ], true));
+        }
+    }
+
+    private function getChangedAt(string $content, ?Page $page = null): Argon
+    {
+        if (empty($page) || $page->content !== $content) {
+            return Argon::now();
+        }
+
+        return $page->changed_at;
+    }
+
+    private function getStatusId(string $content, ?Page $page = null): PageStatus
+    {
+        if (empty($page) || empty($page->document_id)) {
+            return PageStatus::CREATE;
+        }
+
+        if ($page->content !== $content || $page->status_id === PageStatus::DELETED_MANUALLY) {
+            return PageStatus::UPDATE;
+        }
+
+        return $page->status_id;
     }
 }

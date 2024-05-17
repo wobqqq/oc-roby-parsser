@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Models;
 
+use BlackSeaDigital\Parser\Enums\PageStatus;
 use Model;
 use October\Rain\Database\Traits\Validation;
 
@@ -15,9 +16,12 @@ use October\Rain\Database\Traits\Validation;
  * @property bool $is_active
  * @property int $resource_id
  * @property string $external_id
+ * @property string|null $document_id
+ * @property PageStatus $status_id
  * @property string $title
  * @property string $content
- * @property \October\Rain\Argon\Argon|null $parsed_at
+ * @property \October\Rain\Argon\Argon $parsed_at
+ * @property \October\Rain\Argon\Argon $changed_at
  * @property \October\Rain\Argon\Argon|null $sent_at
  * @property \October\Rain\Argon\Argon|null $created_at
  * @property \October\Rain\Argon\Argon|null $updated_at
@@ -38,14 +42,17 @@ use October\Rain\Database\Traits\Validation;
  * @method static \October\Rain\Database\Builder|Page searchWhereRelation($term, $relation, $columns = [], $mode = 'all')
  * @method static \October\Rain\Database\Builder|Page simplePaginateAtPage($perPage, $currentPage)
  * @method static \October\Rain\Database\Builder|Page simplePaginateCustom($perPage, $pageName)
+ * @method static \October\Rain\Database\Builder|Page whereChangedAt($value)
  * @method static \October\Rain\Database\Builder|Page whereContent($value)
  * @method static \October\Rain\Database\Builder|Page whereCreatedAt($value)
+ * @method static \October\Rain\Database\Builder|Page whereDocumentId($value)
  * @method static \October\Rain\Database\Builder|Page whereExternalId($value)
  * @method static \October\Rain\Database\Builder|Page whereId($value)
  * @method static \October\Rain\Database\Builder|Page whereIsActive($value)
  * @method static \October\Rain\Database\Builder|Page whereParsedAt($value)
  * @method static \October\Rain\Database\Builder|Page whereResourceId($value)
  * @method static \October\Rain\Database\Builder|Page whereSentAt($value)
+ * @method static \October\Rain\Database\Builder|Page whereStatusId($value)
  * @method static \October\Rain\Database\Builder|Page whereTitle($value)
  * @method static \October\Rain\Database\Builder|Page whereUpdatedAt($value)
  * @method static \October\Rain\Database\Builder|Page whereUrl($value)
@@ -63,11 +70,14 @@ class Page extends Model
         'is_active' => 'Active',
         'resource_id' => 'Resource',
         'external_id' => 'External Id',
+        'document_id' => 'Document Id',
+        'status_id' => 'Status',
         'title' => 'Title',
         'content' => 'Content',
         'created_at' => 'Created at',
         'updated_at' => 'Updated at',
         'parsed_at' => 'Parsed at',
+        'changed_at' => 'Changed at',
         'sent_at' => 'Sent At',
     ];
 
@@ -76,10 +86,13 @@ class Page extends Model
         'is_active' => 'boolean',
         'resource_id' => 'required|integer',
         'external_id' => 'required|string|max:255',
+        'document_id' => 'nullable|string|max:255',
+        'status_id' => 'required|string|max:50',
         'title' => 'nullable|string|max:500',
         'content' => 'required|string',
-        'parsed_at' => 'nullable|date',
+        'parsed_at' => 'required|date',
         'sent_at' => 'nullable|date',
+        'changed_at' => 'required|date',
     ];
 
     /** @var string[] */
@@ -88,10 +101,13 @@ class Page extends Model
         'is_active',
         'resource_id',
         'external_id',
+        'document_id',
+        'status_id',
         'title',
         'content',
         'parsed_at',
         'sent_at',
+        'changed_at',
     ];
 
     /** @var string[] */
@@ -100,6 +116,7 @@ class Page extends Model
         'sent_at',
         'created_at',
         'updated_at',
+        'changed_at',
     ];
 
     /** @var array[] */
@@ -108,5 +125,17 @@ class Page extends Model
     /** @var string[] */
     public $casts = [
         'is_active' => 'bool',
+        'status_id' => PageStatus::class,
     ];
+
+    public function getStatusIdsOptions(): array
+    {
+        return [
+            PageStatus::CREATE->value => 'Create',
+            PageStatus::UPDATE->value => 'Update',
+            PageStatus::DELETE->value => 'Delete',
+            PageStatus::PROCESSED->value => 'Processed',
+            PageStatus::DELETED_MANUALLY->value => 'Deleted manually',
+        ];
+    }
 }

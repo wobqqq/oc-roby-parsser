@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace BlackSeaDigital\Parser\Services;
+namespace BlackSeaDigital\Parser;
 
 use Arr;
+use BlackSeaDigital\Parser\Enums\PageStatus;
 use BlackSeaDigital\Parser\Enums\ResourceNames;
 use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Resource;
 use BlackSeaDigital\Parser\Queries\PageQuery;
 use BlackSeaDigital\Parser\Services\PageParsingService\PageParsingService;
+use BlackSeaDigital\Parser\Services\PageService;
+use BlackSeaDigital\Parser\Services\UrlService;
 use Config;
 use Exception;
 use Goutte\Client as GoutteClient;
@@ -57,7 +60,8 @@ final class ResourceParsingService
         private readonly UrlService $urlService,
         private readonly PageParsingService $pageParsingService,
         private readonly PageQuery $pageQuery,
-        private readonly Resource $resource
+        private readonly Resource $resource,
+        private readonly PageService $pageService,
     ) {
         $requestRetries = (int)Config::get('parser.request_retries');
         $stack = HandlerStack::create();
@@ -116,6 +120,8 @@ final class ResourceParsingService
 
             $requestUrls = $this->getUrlsFromQueue();
         }
+
+        $this->setDeletePageStatus();
 
         Log::info(
             sprintf(
@@ -429,6 +435,28 @@ final class ResourceParsingService
         }
 
         return $result;
+    }
+
+    private function setDeletePageStatus(): void
+    {
+        $externalIds = array_map(function (string $urlKey) {
+            return $this->urlService->getExternalId($this->resource->id, $urlKey);
+        }, $this->notFoundUrls);
+
+        if (empty($externalIds)) {
+            return;
+        }
+
+        $pages = $this->pageQuery->getPageUrlsByExternalIds($externalIds);
+
+        foreach ($pages as $page) {
+            try {
+                $this->pageService->updatePageStatus($page, PageStatus::DELETE);
+            } catch (Exception $e) {
+                $this->printLogError($e, ['page_id' => $page->id]);
+                continue;
+            }
+        }
     }
 
     private function printPageResultToConsole(string $pageUrl): void

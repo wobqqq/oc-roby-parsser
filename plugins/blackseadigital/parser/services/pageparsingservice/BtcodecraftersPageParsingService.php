@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
-final class BtcodecraftersPageParsingService extends CommonPageParsingService
+final class BtcodecraftersPageParsingService extends BasePageParsingService
 {
     protected const array CLASSES_TO_EXCLUDE = [
         '.breadcrumb',

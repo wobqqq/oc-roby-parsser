@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
-final class IntrebBancaTransilvaniaPageParsingService extends CommonPageParsingService
+final class IntrebBancaTransilvaniaPageParsingService extends BasePageParsingService
 {
     protected const array CLASSES_TO_EXCLUDE = [
         '.sidemenu',

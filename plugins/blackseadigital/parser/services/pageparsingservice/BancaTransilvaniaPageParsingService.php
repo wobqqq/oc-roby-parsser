@@ -6,7 +6,7 @@ namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
 use BlackSeaDigital\Parser\Exceptions\ParserException;
 
-final class BancaTransilvaniaPageParsingService extends CommonPageParsingService
+final class BancaTransilvaniaPageParsingService extends BasePageParsingService
 {
     protected const array CLASSES_TO_EXCLUDE = [
         '.bt-modal',

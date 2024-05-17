@@ -25,7 +25,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::INTREB_BANCATRANSILVANIA_RO->value,
                 'url' => 'https://intreb.bancatransilvania.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => 'https://intreb.bancatransilvania.ro/sitemap.xml',
                     'scan_exceptions' => [],
@@ -34,7 +34,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::BLOG_BANCATRANSILVANIA_RO->value,
                 'url' => 'https://blog.bancatransilvania.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => 'https://blog.bancatransilvania.ro/sitemap.xml',
                     'scan_exceptions' => [],
@@ -43,7 +43,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::BANCATRANSILVANIA_RO->value,
                 'url' => 'https://www.bancatransilvania.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => 'https://www.bancatransilvania.ro/sitemap.xml',
                     'scan_exceptions' => [
@@ -79,7 +79,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::COMUNITATE_BANCATRANSILVANIA_RO->value,
                 'url' => 'https://comunitate.bancatransilvania.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => null,
                     'scan_exceptions' => [],
@@ -88,7 +88,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::BTPENSII_RO->value,
                 'url' => 'https://btpensii.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => null,
                     'scan_exceptions' => [],
@@ -97,7 +97,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::BTMIC_RO->value,
                 'url' => 'https://www.btmic.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => null,
                     'scan_exceptions' => [],
@@ -106,7 +106,7 @@ return new class () extends Migration {
             [
                 'name' => ResourceNames::BTCODECRAFTERS_RO->value,
                 'url' => 'https://btcodecrafters.ro',
-                'is_active' => true,
+                'is_active' => false,
                 'config' => json_encode([
                     'sitemap_url' => null,
                     'scan_exceptions' => [],

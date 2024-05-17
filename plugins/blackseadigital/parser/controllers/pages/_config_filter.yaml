@@ -10,11 +10,23 @@ scopes:
         modelClass: BlackSeaDigital\Parser\Models\Resource
         conditions: resource_id in (:filtered)
         nameFrom: name
+    status_id:
+        label: Status
+        type: dropdown
+        modelClass: BlackSeaDigital\Parser\Models\Page
+        emptyOption: Status
+        options: getStatusIdsOptions
+        conditions: status_id = :value
     parsed_at:
         label: Parsed at
         type: daterange
         conditions:
             between: parsed_at >= ':after' AND parsed_at <= ':before'
+    changed_at:
+        label: Changed at
+        type: daterange
+        conditions:
+            between: changed_at >= ':after' AND changed_at <= ':before'
     sent_at:
         label: Sent At
         type: daterange

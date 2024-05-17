@@ -6,24 +6,24 @@ namespace BlackSeaDigital\Parser\Console;
 
 use BlackSeaDigital\Parser\Models\Resource;
 use BlackSeaDigital\Parser\Queries\ResourceQuery;
-use BlackSeaDigital\Parser\ResourceParsingService;
+use BlackSeaDigital\Parser\Services\ChatGptSenderService;
 use Illuminate\Console\Command;
 use Log;
 use October\Rain\Argon\Argon;
 
-final class ParseResourcesCommand extends Command
+final class SendContentToChatGPTCommand extends Command
 {
-    private const string STARTING_MESSAGE = 'Start of parsing (%s)';
+    private const string STARTING_MESSAGE = 'Start of sending to ChatGPT (%s)';
 
-    private const string ENDING_MESSAGE = 'End of parsing (%s)';
-
-    /** @var string */
-    protected $name = 'black-sea-digital.parse_resources';
+    private const string ENDING_MESSAGE = 'End of sending to ChatGPT (%s)';
 
     /** @var string */
-    protected $description = 'Resource parsing';
+    protected $name = 'black-sea-digital.send_content_to_chat_gpt';
 
-    public function handle(ResourceQuery $resourceQuery): void
+    /** @var string */
+    protected $description = 'Send content to ChatGPT';
+
+    public function handle(ResourceQuery $resourceQuery, ChatGptSenderService $chatGptSenderService): void
     {
         $dateAndTime = Argon::now()->toDateTimeString();
 
@@ -32,11 +32,9 @@ final class ParseResourcesCommand extends Command
 
         $resources = $resourceQuery->getActiveResources();
 
-        $resources->each(function (Resource $resource) {
+        $resources->each(function (Resource $resource) use ($chatGptSenderService) {
             try {
-                /** @var ResourceParsingService $ResourceParsingService */
-                $ResourceParsingService = app(ResourceParsingService::class, ['resource' => $resource]);
-                $ResourceParsingService->serveResource();
+                $chatGptSenderService->serve($resource);
             } catch (\Exception|\Throwable $e) {
                 $exceptionData = print_r([
                     'title' => sprintf('%s resource error', $resource->name),

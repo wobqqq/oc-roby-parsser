@@ -17,9 +17,12 @@ return new class () extends Migration {
             $table->boolean('is_active')->default(1)->index();
             $table->smallInteger('resource_id')->unsigned()->index();
             $table->string('external_id')->index();
+            $table->string('document_id')->index()->nullable();
+            $table->string('status_id', 50)->index();
             $table->string('title', 500);
             $table->text('content');
-            $table->dateTime('parsed_at')->nullable();
+            $table->dateTime('parsed_at');
+            $table->dateTime('changed_at');
             $table->dateTime('sent_at')->nullable();
             $table->timestamps();
 

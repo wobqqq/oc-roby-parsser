@@ -7,6 +7,7 @@ namespace BlackSeaDigital\Parser\Queries;
 use BlackSeaDigital\Parser\Enums\PageStatus;
 use BlackSeaDigital\Parser\Models\Page;
 use BlackSeaDigital\Parser\Models\Resource;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use October\Rain\Database\Builder;
 
@@ -38,26 +39,36 @@ final readonly class PageQuery
         return $this->queryToSendPagesToChatGpt($resourceId)->count();
     }
 
-    public function chunkToSendPagesToChatGpt(int $resourceId, callable $callback, int $count = 100): void
-    {
-        $this->queryToSendPagesToChatGpt($resourceId)->chunk($count, $callback);
+    /**
+     * @return LengthAwarePaginator<int, Page>
+     */
+    public function getPagesToSendToChatGpt(
+        int $resourceId,
+        array $pageIdExceptions = [],
+        int $count = 100
+    ): LengthAwarePaginator {
+        return $this->queryToSendPagesToChatGpt($resourceId, $pageIdExceptions)->paginate($count);
     }
 
-    private function queryToSendPagesToChatGpt(int $resourceId): Builder
+    private function queryToSendPagesToChatGpt(int $resourceId, array $pageIdExceptions = []): Builder
     {
         return Page::whereResourceId($resourceId)
+            ->when(!empty($pageIdExceptions), fn (Builder|Page $q) => $q->whereNotIn('id', $pageIdExceptions))
             ->where(
                 fn (Builder|Page $q) => $q
-                ->where(
-                    fn (Builder|Page $q) => $q
-                    ->whereIsActive(true)
-                    ->whereIn('status_id', [PageStatus::CREATE, PageStatus::UPDATE->value, PageStatus::DELETE->value])
-                )
-                ->orWhere(
-                    fn (Builder|Page $q) => $q
-                    ->whereIsActive(false)
-                    ->whereNot('status_id', PageStatus::DELETED_MANUALLY->value)
-                )
+                    ->where(
+                        fn (Builder|Page $q) => $q
+                            ->whereIsActive(true)
+                            ->whereIn(
+                                'status_id',
+                                [PageStatus::CREATE, PageStatus::UPDATE->value, PageStatus::DELETE->value]
+                            )
+                    )
+                    ->orWhere(
+                        fn (Builder|Page $q) => $q
+                            ->whereIsActive(false)
+                            ->whereNot('status_id', PageStatus::DELETED_MANUALLY->value)
+                    )
             );
     }
 }

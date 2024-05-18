@@ -24,41 +24,67 @@ final readonly class ChatGptSenderService
     ) {
     }
 
-    public function serve(Resource $resource): void
+    public function sendResourcePagesToChatGpt(Resource $resource): void
     {
         $totalPages = $this->pageQuery->countPagesToSendToChatGpt($resource->id);
         $countPages = 0;
+        $pageIdExceptions = [];
 
-        $this->pageQuery->chunkToSendPagesToChatGpt(
-            $resource->id,
-            function (Collection $pages) use ($resource, $totalPages, &$countPages) {
-                /** @var Collection<int, Page> $page */
-                foreach ($pages as $page) {
-                    try {
-                        $this->servePage($page);
-                    } catch (Exception $e) {
-                        Log::error(print_r([
-                            'page_id' => $page->id,
-                            'message' => $e->getMessage(),
-                            'line' => $e->getLine(),
-                            'file' => $e->getFile(),
-                            'trace' => $e->getTraceAsString(),
-                        ], true));
-                    }
+        $pages = $this->pageQuery->getPagesToSendToChatGpt($resource->id, $pageIdExceptions);
 
+        while ($pages->isNotEmpty()) {
+            /** @var Collection<int, Page> $page */
+            foreach ($pages as $page) {
+                try {
+                    $this->sendPageToChatGpt($page);
                     $countPages++;
                     $this->printResourceChunkResultToConsole($resource, $totalPages, $countPages);
+                } catch (Exception $e) {
+                    $pageIdExceptions[] = $page->id;
+
+                    Log::error(print_r([
+                        'page_id' => $page->id,
+                        'message' => $e->getMessage(),
+                        'line' => $e->getLine(),
+                        'file' => $e->getFile(),
+                        'trace' => $e->getTraceAsString(),
+                    ], true));
                 }
             }
-        );
+
+            $pages = $this->pageQuery->getPagesToSendToChatGpt($resource->id, $pageIdExceptions);
+        }
 
         $this->printResourceResultToLog($resource, $totalPages, $countPages);
+    }
+
+    public function deleteAllDocumentsFromChatGpt(): void
+    {
+        $offset = 0;
+
+        $documents = $this->chatGptClient->listAllTexts($offset);
+
+        while (!empty($documents)) {
+            echo sprintf("Delete documents from ChatGPT offser: %s\n", $offset);
+
+            $documents = $this->chatGptClient->listAllTexts($offset);
+
+            if ($documents === null) {
+                return;
+            }
+
+            foreach ($documents as $document) {
+                $this->chatGptClient->deleteText($document->documentId);
+            }
+
+            $offset += count($documents);
+        }
     }
 
     /**
      * @throws ParserException
      */
-    private function servePage(Page $page): void
+    private function sendPageToChatGpt(Page $page): void
     {
         if ($page->status_id === PageStatus::CREATE && empty($page->document_id)) {
             $this->createDocument($page);

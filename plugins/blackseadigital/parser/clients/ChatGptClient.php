@@ -34,7 +34,7 @@ final class ChatGptClient
     /**
      * @return null|ChatGptDocumentDto[]
      */
-    public function listAllTexts(int $limit = 100, int $offset = 0): ?array
+    public function listAllTexts(int $offset = 0, int $limit = 100): ?array
     {
         $query = [
             'limit' => $limit,

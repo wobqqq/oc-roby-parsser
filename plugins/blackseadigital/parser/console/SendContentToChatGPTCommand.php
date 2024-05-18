@@ -34,7 +34,7 @@ final class SendContentToChatGPTCommand extends Command
 
         $resources->each(function (Resource $resource) use ($chatGptSenderService) {
             try {
-                $chatGptSenderService->serve($resource);
+                $chatGptSenderService->sendResourcePagesToChatGpt($resource);
             } catch (\Exception|\Throwable $e) {
                 $exceptionData = print_r([
                     'title' => sprintf('%s resource error', $resource->name),

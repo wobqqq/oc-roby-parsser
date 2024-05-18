@@ -137,3 +137,9 @@ Start the resource sender web pages content to ChatGPT:
 ```bash
 docker exec -t roby-parser-php-fpm php artisan black-sea-digital.send_content_to_chat_gpt
 ```
+
+Delete all ChatGPT documents:
+
+```bash
+docker exec -t roby-parser-php-fpm php artisan black-sea-digital.delete_all_chat_gpt_documents
+```

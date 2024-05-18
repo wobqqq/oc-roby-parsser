@@ -24,7 +24,7 @@ tabs:
             default: 0
             type: switch
             tab: Settings
-            comment: 'Enable/disable sending data by page to the API.'
+            comment: 'Enable/disable processing of data by page.'
         status_id:
             label: Status
             span: left

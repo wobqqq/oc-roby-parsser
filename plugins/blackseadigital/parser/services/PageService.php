@@ -56,7 +56,7 @@ final class PageService
         return $page;
     }
 
-    public function updatePageChatGptData(Page $page, PageStatus $statusId, string $documentId): Page
+    public function updatePageChatGptData(Page $page, PageStatus $statusId, ?string $documentId): Page
     {
         $page->status_id = $statusId;
         $page->document_id = $documentId;

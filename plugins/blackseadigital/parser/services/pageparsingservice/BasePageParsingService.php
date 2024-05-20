@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BlackSeaDigital\Parser\Services\PageParsingService;
 
 use Arr;
+use BlackSeaDigital\Parser\Dtos\Models\PageModelDto;
+use BlackSeaDigital\Parser\Dtos\ParserPageDto;
 use BlackSeaDigital\Parser\Enums\PageStatus;
 use BlackSeaDigital\Parser\Exceptions\ParserException;
 use BlackSeaDigital\Parser\Models\Page;
@@ -58,11 +60,25 @@ class BasePageParsingService implements IPageParsingService
 
         [$title, $content] = $this->getContent($crawler);
 
+        $changedAt = $this->getChangedAt($content, $page);
+        $statusId = $this->getStatusId($content, $page);
+
+        $parserPageDto = ParserTransformer::parserPageFromParser(
+            $urlKey,
+            $externalId,
+            $statusId,
+            $resource,
+            $title,
+            $content,
+            $changedAt,
+        );
+
         try {
             $this->checkUrl($urlKey);
             $this->checkUrlParameters($urlKey);
             $this->checkContent($content);
             $this->checkForm($crawler);
+            $this->checkDuplicateContent($page, $parserPageDto);
             $this->check($urlKey);
         } catch (Exception|Throwable $e) {
             $this->delete($page);
@@ -70,7 +86,9 @@ class BasePageParsingService implements IPageParsingService
             return;
         }
 
-        $this->update($urlKey, $externalId, $resource, $title, $content, $page);
+        $pageModelDto = ParserTransformer::pageFromParserPageDto($parserPageDto, $page);
+
+        $this->update($pageModelDto, $page);
     }
 
     protected function check(string $urlKey): void
@@ -164,6 +182,18 @@ class BasePageParsingService implements IPageParsingService
     /**
      * @throws ParserException
      */
+    private function checkDuplicateContent(?Page $page, ParserPageDto $parserPageDto): void
+    {
+        $isDuplicatePage = $this->pageQuery->isDuplicatePageContent($page, $parserPageDto->contentId);
+
+        if ($isDuplicatePage) {
+            throw new ParserException('This content already exists');
+        }
+    }
+
+    /**
+     * @throws ParserException
+     */
     private function checkForm(Crawler $crawler): void
     {
         if ($crawler->filter('form')->count() > 0) {
@@ -171,35 +201,8 @@ class BasePageParsingService implements IPageParsingService
         }
     }
 
-    private function update(
-        string $url,
-        string $externalId,
-        Resource $resource,
-        string $title,
-        string $content,
-        ?Page $page = null,
-    ): void {
-        $changedAt = $this->getChangedAt($content, $page);
-        $statusId = $this->getStatusId($content, $page);
-
-        $parserPageDto = ParserTransformer::parserPageFromParser(
-            $url,
-            $externalId,
-            $statusId,
-            $resource,
-            $title,
-            $content,
-            $changedAt,
-        );
-
-        $pageModelDto = ParserTransformer::pageFromParserPageDto($parserPageDto, $page);
-
-        $duplicatePage = $this->pageQuery->findPageByContentId($parserPageDto->contentId);
-
-        if (!empty($duplicatePage)) {
-            return;
-        }
-
+    private function update(PageModelDto $pageModelDto, ?Page $page = null): void
+    {
         if (empty($page)) {
             $this->pageService->create($pageModelDto);
         } else {

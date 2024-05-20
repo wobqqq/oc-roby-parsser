@@ -29,9 +29,13 @@ final readonly class PageQuery
         return Page::whereIn('external_id', $externalIds)->get();
     }
 
-    public function findPageByContentId(string $contentId): ?Page
+    public function isDuplicatePageContent(?Page $page, string $contentId): bool
     {
-        return Page::whereContentId($contentId)->first();
+        $page = Page::whereContentId($contentId)
+            ->when(!empty($page), fn (Builder|Page $q) => $q->whereNot('id', $page->id))
+            ->first();
+
+        return !empty($page);
     }
 
     public function countPagesToSendToChatGpt(int $resourceId): int

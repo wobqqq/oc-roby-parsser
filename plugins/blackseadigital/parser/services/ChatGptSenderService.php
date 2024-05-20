@@ -194,7 +194,7 @@ final readonly class ChatGptSenderService
         }
 
         if (empty($chatGptDocumentDto->documentId)) {
-            $this->pageService->updatePageStatus($page, PageStatus::DELETED_MANUALLY);
+            $this->pageService->updatePageChatGptData($page, PageStatus::DELETED_MANUALLY, null);
 
             return;
         }
@@ -205,7 +205,7 @@ final readonly class ChatGptSenderService
             throw new ParserException('Bad request to delete a document');
         }
 
-        $this->pageService->updatePageStatus($page, PageStatus::DELETED_MANUALLY);
+        $this->pageService->updatePageChatGptData($page, PageStatus::DELETED_MANUALLY, null);
     }
 
     private function printResourceChunkResultToConsole(Resource $resource, int $totalPages, int $countPages): void
